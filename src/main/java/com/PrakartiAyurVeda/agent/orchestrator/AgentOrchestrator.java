@@ -2,6 +2,7 @@ package com.PrakartiAyurVeda.agent.orchestrator;
 
 import java.util.List;
 
+import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
 import com.PrakartiAyurVeda.agent.Agent;
@@ -17,24 +18,35 @@ public class AgentOrchestrator {
 
     private final List<Agent> agents;
 
-    /**
-     * Executes agents sequentially using shared AgentContext.
-     */
     public AgentContext run(AgentContext context) {
 
-        for (Agent agent : agents) {
-
-            log.info("Executing agent: {}", agent.name());
-
-            agent.execute(context);
-
-            if (!context.isSafe()) {
-                log.warn("Execution stopped. System marked unsafe by agent: {}", agent.name());
-                break;
-            }
+        // Add user info to logs (if available)
+        if (context.getUser() != null) {
+            MDC.put("user", context.getUser().getEmail());
         }
 
-        context.setCompleted(true);
-        return context;
+        try {
+            for (Agent agent : agents) {
+
+                long start = System.currentTimeMillis();
+                log.info("[AGENT_START] {}", agent.name());
+
+                agent.execute(context);
+
+                long duration = System.currentTimeMillis() - start;
+                log.info("[AGENT_END] {} took {} ms", agent.name(), duration);
+
+                if (!context.isSafe()) {
+                    log.warn("[AGENT_ABORTED] {} marked context unsafe", agent.name());
+                    break;
+                }
+            }
+
+            context.setCompleted(true);
+            return context;
+
+        } finally {
+            MDC.remove("user");
+        }
     }
 }

@@ -58,4 +58,21 @@ public class AssessmentService {
             return DoshaType.KAPHA;
         }
     }
+
+    public Assessment getById(Long id) {
+        return assessmentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Assessment not found with id: " + id));
+    }
+
+    public List<Assessment> getByUserId(Long userId) {
+        return assessmentRepository.findByUserId(userId);
+    }
+
+    @Transactional
+    public void deleteById(Long id) {
+        if (!assessmentRepository.existsById(id)) {
+            throw new RuntimeException("Assessment not found with id: " + id);
+        }
+        assessmentRepository.deleteById(id);
+    }
 }

@@ -47,4 +47,25 @@ public class DietService {
                         )
                 );
     }
+
+    public DietPlan getById(Long id) {
+        return dietPlanRepository.findById(id)
+                .orElseThrow(() ->
+                        new IllegalArgumentException(
+                                "Diet plan not found with id: " + id
+                        )
+                );
+    }
+
+    public DietPlan getByAssessmentId(Long assessmentId) {
+        return getDietByAssessmentId(assessmentId);
+    }
+
+    @Transactional
+    public void deleteById(Long id) {
+        if (!dietPlanRepository.existsById(id)) {
+            throw new IllegalArgumentException("Diet plan not found with id: " + id);
+        }
+        dietPlanRepository.deleteById(id);
+    }
 }

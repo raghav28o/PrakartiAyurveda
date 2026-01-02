@@ -2,6 +2,7 @@ package com.PrakartiAyurVeda.assessment.controller;
 
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.PrakartiAyurVeda.assessment.entity.Answer;
@@ -31,5 +32,23 @@ public class AssessmentController {
 
         User user = userService.getById(userId);
         return assessmentService.createAssessment(user, answers);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Assessment> getAssessmentById(@PathVariable Long id) {
+        Assessment assessment = assessmentService.getById(id);
+        return ResponseEntity.ok(assessment);
+    }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<Assessment>> getAssessmentsByUserId(@PathVariable Long userId) {
+        List<Assessment> assessments = assessmentService.getByUserId(userId);
+        return ResponseEntity.ok(assessments);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteAssessment(@PathVariable Long id) {
+        assessmentService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }

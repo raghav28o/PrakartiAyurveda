@@ -1,6 +1,7 @@
 package com.PrakartiAyurVeda.agent.diet;
 
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
@@ -9,14 +10,17 @@ import com.PrakartiAyurVeda.agent.context.AgentContext;
 import com.PrakartiAyurVeda.common.enums.DoshaType;
 import com.PrakartiAyurVeda.diet.entity.DietPlan;
 
-import lombok.RequiredArgsConstructor;
-
 @Component
 @Order(3)
-@RequiredArgsConstructor
 public class DietRecommendationAgent implements Agent {
 
     private final ChatClient chatClient;
+    private final SimpleLoggerAdvisor simpleLoggerAdvisor;
+
+    public DietRecommendationAgent(ChatClient.Builder builder, SimpleLoggerAdvisor simpleLoggerAdvisor) {
+        this.chatClient = builder.defaultAdvisors(simpleLoggerAdvisor).build();
+        this.simpleLoggerAdvisor = simpleLoggerAdvisor;
+    }
 
     @Override
     public void execute(AgentContext context) {
@@ -29,15 +33,16 @@ public class DietRecommendationAgent implements Agent {
         }
 
         String prompt = buildPrompt(dosha);
-        System.out.println("AI_Prompt: "+prompt);
+//        System.out.println("AI_Prompt: "+prompt);
 
         String aiResponse = chatClient
                 .prompt()
+                .advisors(simpleLoggerAdvisor)
                 .user(prompt)
                 .call()
                 .content();
 
-        System.out.println("Ai_Response: "+aiResponse);
+//        System.out.println("Ai_Response: "+aiResponse);
 
         DietPlan dietPlan = parseDiet(aiResponse, dosha);
         context.setDietPlan(dietPlan);
