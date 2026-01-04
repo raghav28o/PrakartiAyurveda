@@ -21,4 +21,13 @@ public class User {
 
     @JsonIgnore
     private String password;
+
+    private Integer age;
+
+    private String gender;
+
+    private String location;
+
+    @Enumerated(EnumType.STRING)
+    private FoodPreference foodPreference;
 }

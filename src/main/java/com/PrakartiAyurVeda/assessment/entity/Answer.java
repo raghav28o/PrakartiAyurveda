@@ -30,18 +30,14 @@ public class Answer {
 
     @Column(nullable = false)
     private String questionCode;
-    // example: Q_HEAT_TOLERANCE, Q_APPETITE
 
     @Column(nullable = false)
     private String answerValue;
-    // example: "HIGH", "LOW", "YES", "NO"
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private DoshaType doshaType;
-    // which dosha this answer affects
 
     @Column(nullable = false)
     private int weight;
-    // how strongly it affects (1, 2, 3)
 }
