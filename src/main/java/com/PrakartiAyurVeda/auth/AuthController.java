@@ -27,7 +27,7 @@ public class AuthController {
 
     // 🔹 REGISTER
     @PostMapping("/register")
-    public String register(@Valid @RequestBody RegisterRequest request) {
+    public AuthResponse register(@Valid @RequestBody RegisterRequest request) {
 
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new IllegalArgumentException("Email already registered");
@@ -39,7 +39,16 @@ public class AuthController {
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
         userRepository.save(user);
-        return "User registered successfully";
+        Authentication authentication =
+                authenticationManager.authenticate(
+                        new UsernamePasswordAuthenticationToken(
+                                request.getEmail(),
+                                request.getPassword()
+                        )
+                );
+
+        String token = jwtProvider.generateToken(authentication.getName());
+        return new AuthResponse(token);
     }
 
     // 🔹 LOGIN

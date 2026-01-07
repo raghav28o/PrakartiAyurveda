@@ -5,7 +5,7 @@ import java.util.List;
 import com.PrakartiAyurVeda.assessment.entity.Answer;
 import com.PrakartiAyurVeda.assessment.entity.Assessment;
 import com.PrakartiAyurVeda.common.enums.DoshaType;
-import com.PrakartiAyurVeda.diet.entity.DietPlan;
+import com.PrakartiAyurVeda.diet.dto.DietPlanDto;
 import com.PrakartiAyurVeda.user.entity.User;
 
 import lombok.Data;
@@ -26,7 +26,9 @@ public class AgentContext {
     private DoshaType dominantDosha;
 
     // Generated diet plan
-    private DietPlan dietPlan;
+    private DietPlanDto dietPlan;
+    
+    private boolean setUseDetailedDietPlan = false;
 
     // Flow control flags
     private boolean safe = true;

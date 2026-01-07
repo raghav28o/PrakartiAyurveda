@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 
 import com.PrakartiAyurVeda.agent.Agent;
 import com.PrakartiAyurVeda.agent.context.AgentContext;
-import com.PrakartiAyurVeda.diet.entity.DietPlan;
+import com.PrakartiAyurVeda.diet.dto.DietPlanDto;
 
 @Component
 @Order(4)
@@ -14,7 +14,7 @@ public class SafetyAgent implements Agent {
     @Override
     public void execute(AgentContext context) {
 
-        DietPlan dietPlan = context.getDietPlan();
+        DietPlanDto dietPlan = context.getDietPlan();
 
         if (dietPlan == null) {
             context.setSafe(false);

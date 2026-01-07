@@ -45,6 +45,7 @@ public class Assessment {
             orphanRemoval = true
     )
     @JsonManagedReference
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private List<Answer> answers;
 
 }

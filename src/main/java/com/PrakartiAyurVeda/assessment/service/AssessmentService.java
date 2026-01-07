@@ -1,7 +1,7 @@
 package com.PrakartiAyurVeda.assessment.service;
 
-import java.util.List;
-
+import com.PrakartiAyurVeda.diet.entity.DietPlan;
+import com.PrakartiAyurVeda.diet.repository.DietPlanRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,11 +13,14 @@ import com.PrakartiAyurVeda.user.entity.User;
 
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class AssessmentService {
 
     private final AssessmentRepository assessmentRepository;
+    private final DietPlanRepository dietPlanRepository;
 
     @Transactional
     public Assessment createAssessment(User user, List<Answer> answers) {
@@ -74,5 +77,18 @@ public class AssessmentService {
             throw new RuntimeException("Assessment not found with id: " + id);
         }
         assessmentRepository.deleteById(id);
+    }
+
+    @Transactional
+    public DietPlan updateDietPlan(Long dietPlanId, String breakfast, String lunch, String dinner, String avoidFoods) {
+        DietPlan dietPlan = dietPlanRepository.findById(dietPlanId)
+                .orElseThrow(() -> new RuntimeException("Diet plan not found with id: " + dietPlanId));
+
+        dietPlan.setBreakfast(breakfast);
+        dietPlan.setLunch(lunch);
+        dietPlan.setDinner(dinner);
+        dietPlan.setAvoidFoods(avoidFoods);
+
+        return dietPlanRepository.save(dietPlan);
     }
 }
