@@ -27,8 +27,11 @@ public class AgentContext {
 
     // Generated diet plan
     private DietPlanDto dietPlan;
-    
+
     private boolean setUseDetailedDietPlan = false;
+
+    // Flag to generate a full weekly plan
+    private boolean generateWeeklyPlan = false;
 
     // Flow control flags
     private boolean safe = true;

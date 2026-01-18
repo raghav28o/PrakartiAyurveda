@@ -1,5 +1,6 @@
 package com.PrakartiAyurVeda.assessment.service;
 
+import com.PrakartiAyurVeda.assessment.dto.UserAssessmentHistoryDto;
 import com.PrakartiAyurVeda.diet.entity.DietPlan;
 import com.PrakartiAyurVeda.diet.repository.DietPlanRepository;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import com.PrakartiAyurVeda.user.entity.User;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -69,6 +71,18 @@ public class AssessmentService {
 
     public List<Assessment> getByUserId(Long userId) {
         return assessmentRepository.findByUserId(userId);
+    }
+
+    public List<UserAssessmentHistoryDto> getAllAssessmentsAndDietPlansForUser(Long userId) {
+        List<Assessment> assessments = assessmentRepository.findByUserIdOrderByCreatedAtDesc(userId);
+
+        return assessments.stream()
+                .map(assessment -> {
+                    DietPlan dietPlan = dietPlanRepository.findByAssessmentId(assessment.getId())
+                            .orElse(null); // Or throw an exception if a diet plan is always expected
+                    return new UserAssessmentHistoryDto(assessment, dietPlan);
+                })
+                .collect(Collectors.toList());
     }
 
     @Transactional

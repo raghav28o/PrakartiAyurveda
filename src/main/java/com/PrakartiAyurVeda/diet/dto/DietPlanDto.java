@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -18,6 +19,6 @@ public class DietPlanDto {
     private String breakfast;
     private String lunch;
     private String dinner;
+    private List<DailyDietDto> dailyDiets;
     private String avoidFoods;
-    private LocalDate createdDate;
 }

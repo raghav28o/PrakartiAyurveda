@@ -55,11 +55,12 @@ public class AssessmentController {
 
     @PutMapping("/{assessmentId}/regenerate-diet-plan")
     public ResponseEntity<Map<String, Object>> regenerateDetailedDietPlan(@PathVariable Long assessmentId) {
-        DietPlan updatedDietPlan = agentExecutionService.regenerateDetailedDietPlan(assessmentId);
 
         // Get the assessment details
         Assessment assessment = assessmentRepository.findById(assessmentId)
                 .orElseThrow(() -> new IllegalStateException("Assessment not found"));
+
+        DietPlan updatedDietPlan = agentExecutionService.regenerateDetailedDietPlan(assessmentId);
 
         // Return map response with dietPlan and assessment
         Map<String, Object> response = new HashMap<>();
