@@ -1,5 +1,6 @@
 package com.PrakartiAyurVeda.config;
 
+import com.PrakartiAyurVeda.auth.handler.OAuth2LoginSuccessHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,6 +26,7 @@ import java.util.Arrays;
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -36,9 +38,13 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**", "/actuator/**", "/api/assessment/run").permitAll()
+                        .requestMatchers("/auth/**", "/oauth2/**", "/actuator/**", "/api/assessment/run").permitAll()
+                        .requestMatchers("/api/assessments/*/regenerate-diet-plan").permitAll()
                         .requestMatchers("/api/**").authenticated()
                         .anyRequest().authenticated()
+                )
+                .oauth2Login(oauth2 -> oauth2
+                        .successHandler(oAuth2LoginSuccessHandler)
                 )
                 .addFilterBefore(
                         jwtAuthenticationFilter,

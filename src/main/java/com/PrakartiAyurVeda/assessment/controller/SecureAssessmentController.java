@@ -3,6 +3,7 @@ package com.PrakartiAyurVeda.assessment.controller;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import com.PrakartiAyurVeda.assessment.dto.UserAssessmentHistoryDto;
 import com.PrakartiAyurVeda.assessment.service.AssessmentService;
@@ -32,7 +33,7 @@ public class SecureAssessmentController {
     private final AssessmentService assessmentService; // Inject AssessmentService
 
     @PostMapping("/run")
-    public Map<String, Object> runAssessment(@RequestBody List<Answer> answers) {
+    public CompletableFuture<Map<String, Object>> runAssessment(@RequestBody List<Answer> answers) {
 
         // 🔐 Extract authenticated user
         Authentication authentication =
@@ -46,21 +47,22 @@ public class SecureAssessmentController {
                 );
 
         // 🚀 Run secure agentic flow
-        DietPlan dietPlan = agentExecutionService.runFullAssessment(user, answers);
+        return agentExecutionService.runFullAssessment(user, answers)
+                .thenApply(dietPlan -> {
+                    // Get the assessment details
+                    Assessment assessment = assessmentRepository.findById(dietPlan.getAssessmentId())
+                            .orElseThrow(() -> new IllegalStateException("Assessment not found"));
 
-        // Get the assessment details
-        Assessment assessment = assessmentRepository.findById(dietPlan.getAssessmentId())
-                .orElseThrow(() -> new IllegalStateException("Assessment not found"));
-
-        // Return map response with dietPlan and assessment
-        Map<String, Object> response = new HashMap<>();
-        response.put("dietPlan", dietPlan);
-        response.put("assessment", assessment);
-        return response;
+                    // Return map response with dietPlan and assessment
+                    Map<String, Object> response = new HashMap<>();
+                    response.put("dietPlan", dietPlan);
+                    response.put("assessment", assessment);
+                    return response;
+                });
     }
 
     @PostMapping("/run-weekly")
-    public Map<String, Object> runWeeklyAssessment(@RequestBody List<Answer> answers) {
+    public CompletableFuture<Map<String, Object>> runWeeklyAssessment(@RequestBody List<Answer> answers) {
 
         // 🔐 Extract authenticated user
         Authentication authentication =
@@ -74,17 +76,18 @@ public class SecureAssessmentController {
                 );
 
         // 🚀 Run secure agentic flow for a weekly plan
-        DietPlan dietPlan = agentExecutionService.runFullWeeklyAssessment(user, answers);
+        return agentExecutionService.runFullWeeklyAssessment(user, answers)
+                .thenApply(dietPlan -> {
+                    // Get the assessment details
+                    Assessment assessment = assessmentRepository.findById(dietPlan.getAssessmentId())
+                            .orElseThrow(() -> new IllegalStateException("Assessment not found"));
 
-        // Get the assessment details
-        Assessment assessment = assessmentRepository.findById(dietPlan.getAssessmentId())
-                .orElseThrow(() -> new IllegalStateException("Assessment not found"));
-
-        // Return map response with dietPlan and assessment
-        Map<String, Object> response = new HashMap<>();
-        response.put("dietPlan", dietPlan);
-        response.put("assessment", assessment);
-        return response;
+                    // Return map response with dietPlan and assessment
+                    Map<String, Object> response = new HashMap<>();
+                    response.put("dietPlan", dietPlan);
+                    response.put("assessment", assessment);
+                    return response;
+                });
     }
 
     @GetMapping("/history")

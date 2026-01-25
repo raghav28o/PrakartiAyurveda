@@ -1,9 +1,12 @@
 package com.PrakartiAyurVeda.user.controller;
 
+import com.PrakartiAyurVeda.auth.UserPrincipal;
+import com.PrakartiAyurVeda.user.dto.UserDto;
 import com.PrakartiAyurVeda.user.entity.User;
 import com.PrakartiAyurVeda.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -12,6 +15,12 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final UserService userService;
+
+    @GetMapping("/me")
+    public ResponseEntity<UserDto> getLoggedInUserProfile(@AuthenticationPrincipal UserPrincipal currentUser) {
+        UserDto userDto = userService.getUserProfileByEmail(currentUser.getUsername());
+        return ResponseEntity.ok(userDto);
+    }
 
     @PostMapping
     public User create(@RequestBody User user) {

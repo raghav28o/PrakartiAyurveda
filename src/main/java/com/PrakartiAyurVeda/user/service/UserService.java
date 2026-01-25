@@ -1,5 +1,6 @@
 package com.PrakartiAyurVeda.user.service;
 
+import com.PrakartiAyurVeda.user.dto.UserDto;
 import com.PrakartiAyurVeda.user.entity.User;
 import com.PrakartiAyurVeda.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +11,25 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+
+    public UserDto getUserProfileByEmail(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
+        return toUserDto(user);
+    }
+
+    private UserDto toUserDto(User user) {
+        return UserDto.builder()
+                .id(user.getId())
+                .name(user.getName())
+                .email(user.getEmail())
+                .age(user.getAge())
+                .gender(user.getGender())
+                .location(user.getLocation())
+                .foodPreference(user.getFoodPreference())
+                .authProvider(user.getAuthProvider())
+                .build();
+    }
 
     public User create(User user) {
         return userRepository.save(user);

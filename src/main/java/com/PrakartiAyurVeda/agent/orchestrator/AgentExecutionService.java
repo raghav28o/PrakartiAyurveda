@@ -1,6 +1,7 @@
 package com.PrakartiAyurVeda.agent.orchestrator;
 
 import com.PrakartiAyurVeda.diet.dto.DietPlanDto;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +17,7 @@ import com.PrakartiAyurVeda.user.entity.User;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -26,8 +28,9 @@ public class AgentExecutionService {
     private final DietService dietService;
     private final DietRecommendationAgent dietRecommendationAgent;
 
+    @Async("taskExecutor")
     @Transactional
-    public DietPlan runFullAssessment(User user, List<Answer> answers) {
+    public CompletableFuture<DietPlan> runFullAssessment(User user, List<Answer> answers) {
 
         // Prepare context
         AgentContext context = new AgentContext();
@@ -48,11 +51,13 @@ public class AgentExecutionService {
         // Persist diet plan
         DietPlanDto dietPlan = context.getDietPlan();
 
-        return dietService.createDietPlan(savedAssessment, dietPlan);
+        DietPlan finalDietPlan = dietService.createDietPlan(savedAssessment, dietPlan);
+        return CompletableFuture.completedFuture(finalDietPlan);
     }
 
+    @Async("taskExecutor")
     @Transactional
-    public DietPlan runFullWeeklyAssessment(User user, List<Answer> answers) {
+    public CompletableFuture<DietPlan> runFullWeeklyAssessment(User user, List<Answer> answers) {
         // Prepare context
         AgentContext context = new AgentContext();
         context.setUser(user);
@@ -73,11 +78,13 @@ public class AgentExecutionService {
         // Persist diet plan
         DietPlanDto dietPlan = context.getDietPlan();
 
-        return dietService.createDietPlan(savedAssessment, dietPlan);
+        DietPlan finalDietPlan = dietService.createDietPlan(savedAssessment, dietPlan);
+        return CompletableFuture.completedFuture(finalDietPlan);
     }
 
+    @Async("taskExecutor")
     @Transactional
-    public DietPlan regenerateDetailedDietPlan(Long assessmentId) {
+    public CompletableFuture<DietPlan> regenerateDetailedDietPlan(Long assessmentId) {
         // Get existing assessment with user and answers
         Assessment assessment = assessmentService.getById(assessmentId);
 
@@ -92,9 +99,10 @@ public class AgentExecutionService {
 //        System.out.println("Regenerated Diet Plan: " + newDietPlan.getBreakfast());
 
         // Update existing diet plan with new values
-        return dietService.updateDietPlan(
+        DietPlan finalDietPlan = dietService.updateDietPlan(
                 assessmentId,
                 newDietPlan
         );
+        return CompletableFuture.completedFuture(finalDietPlan);
     }
 }

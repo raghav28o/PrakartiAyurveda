@@ -3,6 +3,7 @@ package com.PrakartiAyurVeda.assessment.controller;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -54,19 +55,20 @@ public class AssessmentController {
     }
 
     @PutMapping("/{assessmentId}/regenerate-diet-plan")
-    public ResponseEntity<Map<String, Object>> regenerateDetailedDietPlan(@PathVariable Long assessmentId) {
+    public CompletableFuture<ResponseEntity<Map<String, Object>>> regenerateDetailedDietPlan(@PathVariable Long assessmentId) {
 
         // Get the assessment details
         Assessment assessment = assessmentRepository.findById(assessmentId)
                 .orElseThrow(() -> new IllegalStateException("Assessment not found"));
 
-        DietPlan updatedDietPlan = agentExecutionService.regenerateDetailedDietPlan(assessmentId);
-
-        // Return map response with dietPlan and assessment
-        Map<String, Object> response = new HashMap<>();
-        response.put("dietPlan", updatedDietPlan);
-        response.put("assessment", assessment);
-        return ResponseEntity.ok(response);
+        return agentExecutionService.regenerateDetailedDietPlan(assessmentId)
+                .thenApply(updatedDietPlan -> {
+                    // Return map response with dietPlan and assessment
+                    Map<String, Object> response = new HashMap<>();
+                    response.put("dietPlan", updatedDietPlan);
+                    response.put("assessment", assessment);
+                    return ResponseEntity.ok(response);
+                });
     }
 
     @PostMapping("/updateDietPlan/{dietPlanId}")

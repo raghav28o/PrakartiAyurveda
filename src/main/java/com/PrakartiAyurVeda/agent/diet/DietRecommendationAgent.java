@@ -18,8 +18,8 @@ public class DietRecommendationAgent implements Agent {
     private final ChatClient chatClient;
     private final SimpleLoggerAdvisor simpleLoggerAdvisor;
 
-    public DietRecommendationAgent(ChatClient.Builder builder, SimpleLoggerAdvisor simpleLoggerAdvisor) {
-        this.chatClient = builder.defaultAdvisors(simpleLoggerAdvisor).build();
+    public DietRecommendationAgent(ChatClient chatClient, SimpleLoggerAdvisor simpleLoggerAdvisor) {
+        this.chatClient = chatClient;
         this.simpleLoggerAdvisor = simpleLoggerAdvisor;
     }
 
@@ -81,6 +81,8 @@ public class DietRecommendationAgent implements Agent {
             - Dominant Dosha: %s
             - Diet type: Indian vegetarian
             - Goal: General health & balance
+            - Preferred telling the foof names in local Indian languages where applicable
+            - also prefer food which are eaten in Indian region
 
             Generate a DAILY diet plan in STRICT JSON format:
 
@@ -144,6 +146,8 @@ public class DietRecommendationAgent implements Agent {
             - Gender: %s
             - Location: %s
             - Goal: General health & balance
+            - Preferred telling the foof names in local Indian languages where applicable
+            - also prefer food which are eaten in local region
 
             Generate a DETAILED 7-DAY (WEEKLY) diet plan in STRICT JSON format with specific meal suggestions:
 

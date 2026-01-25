@@ -1,5 +1,6 @@
 package com.PrakartiAyurVeda.auth;
 
+import com.PrakartiAyurVeda.user.entity.AuthProvider;
 import jakarta.validation.Valid;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -37,6 +38,7 @@ public class AuthController {
         user.setName(request.getName());
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setAuthProvider(AuthProvider.LOCAL);
 
         userRepository.save(user);
         Authentication authentication =
